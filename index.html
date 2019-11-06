@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Grid</title>
+</head>
+<body>
+    <canvas id="canvas" width="1280" height="720"></canvas>
+</body>
+<script>
+    let deg_to_rad = Math.PI / 180.0;
+    let ln=50;
+    let elem=document.getElementById('canvas');
+    let ctx=elem.getContext('2d');
+    ctx.translate(1280/2,720/2);    
+    ctx.fillStyle="#C0C0C0";
+    ctx.lineWidth=1;
+
+    function drawCircle(x,y,r){
+        ctx.beginPath();
+        ctx.arc(x,y,r,0,Math.PI *2,true);
+        ctx.fill();
+        ctx.closePath();
+    }
+    function drawLine(x1, y1, x2, y2){
+        ctx.beginPath();
+        ctx.moveTo(x1, y1);
+        ctx.lineTo(x2, y2);
+        ctx.closePath();
+        ctx.stroke();
+    }        
+    function drawTriNode(x1,y1,angle,level,dev){
+        if (level>0){
+        level-=1;
+        drawCircle(x1,y1,4)
+        let x2=x1+(Math.cos(angle*deg_to_rad)*ln);
+        let y2=y1+(Math.sin(angle*deg_to_rad)*ln);
+        drawLine(x1,y1,x2,y2);
+        drawCircle(x2,y2,4)
+        drawTriNode(x2,y2,angle+dev,level,dev)
+        drawTriNode(x2,y2,angle-dev,level,dev)
+        }
+    }
+    function drawTree(x1, y1, angle, depth){
+            if (depth !== 0){
+                var x2 = x1 + (Math.cos(angle * deg_to_rad) * depth * 10.00);
+                var y2 = y1 + (Math.sin(angle * deg_to_rad) * depth * 10.00);
+                drawLine(x1, y1, x2, y2, depth);
+                drawTree(x2, y2, angle - 45, depth - 1);
+                drawTree(x2, y2, angle + 45, depth - 1);
+                
+            }
+            }
+
+    ctx.beginPath();
+    //drawTriNode(0,0,45,4,45);
+    let count=0;
+    setInterval(()=>{
+        ctx.clearRect(-720/2,-1280/2,720,1280)
+        count++;
+        let angle=45*Math.sin(count/100.0)
+        for(let i=0;i<4;i++){
+        ctx.translate(ln,ln);
+        drawTriNode(0,0,angle,6,angle);
+        ctx.rotate(90*deg_to_rad);
+    }
+
+    },30)
+
+</script>
+</html>
